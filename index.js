@@ -1,5 +1,5 @@
 const { Plugin } = require('powercord/entities');
-const { FluxDispatcher, getModule, messages } = require('powercord/webpack');
+const { getModule, messages } = require('powercord/webpack');
 const { forceUpdateElement } = require('powercord/util');
 const { inject, uninject } = require('powercord/injector');
 
@@ -29,14 +29,9 @@ module.exports = class ClickableEdits extends Plugin {
       render: Settings
     });
 
-    this.setCurrentUserId = (args) => this.currentUserId = args?.user?.id;
-
-    FluxDispatcher.subscribe('CONNECTION_OPEN', this.setCurrentUserId);
+    this.getCurrentUser = (await getModule(['getCurrentUser'])).getCurrentUser;
 
     this.patchMessageContent();
-
-    const { getCurrentUser } = await getModule(['getCurrentUser']);
-    this.setCurrentUserId({ user: getCurrentUser() });
   }
 
   pluginWillUnload () {
@@ -44,14 +39,12 @@ module.exports = class ClickableEdits extends Plugin {
 
     uninject('clickableEdits-message');
     forceUpdateElement(this.classes.messages);
-
-    FluxDispatcher.unsubscribe('CONNECTION_OPEN', this.setCurrentUserId);
   }
 
   async patchMessageContent () {
     const renderMessage = (args, res) => {
       const { childrenMessageContent: { props: { message } } } = args[0];
-      if (message && message.author.id === this.currentUserId) {
+      if (message && message.author.id === this.getCurrentUser().id) {
         res.props.children.props.onMouseUp = this.handleMessageEdit(message.channel_id, message.id, message.content);
       }
 
