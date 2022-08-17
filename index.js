@@ -34,6 +34,9 @@ module.exports = class ClickableEdits extends Plugin {
     FluxDispatcher.subscribe('CONNECTION_OPEN', this.setCurrentUserId);
 
     this.patchMessageContent();
+
+    const { getCurrentUser } = await getModule(['getCurrentUser']);
+    this.setCurrentUserId({ user: getCurrentUser() });
   }
 
   pluginWillUnload () {
