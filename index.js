@@ -23,7 +23,7 @@ module.exports = class ClickableEdits extends Plugin {
   }
 
   async startPlugin () {
-    powercord.api.settings.registerSettings('pc-clickableEdits', {
+    powercord.api.settings.registerSettings('clickableEdits', {
       category: this.entityID,
       label: 'Clickable Edits',
       render: Settings
@@ -35,7 +35,7 @@ module.exports = class ClickableEdits extends Plugin {
   }
 
   pluginWillUnload () {
-    powercord.api.settings.unregisterSettings('pc-clickableEdits');
+    powercord.api.settings.unregisterSettings('clickableEdits');
 
     uninject('clickableEdits-message');
     forceUpdateElement(this.classes.messages);
